@@ -1,0 +1,39 @@
+@import "tailwindcss" source(none);
+@source "../src";
+
+/* ... restante do seu CSS que mandei antes ... */
+
+@theme {
+  --color-grafite: #3f424b;
+  --color-dourado: #b89d3a;
+  --color-champagne: #b99961;
+}
+
+body {
+  background-color: #000;
+  color: #fff;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  filter: blur(4px);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.delay-100 { transition-delay: 100ms; }

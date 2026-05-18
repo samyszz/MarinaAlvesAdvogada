@@ -1,0 +1,60 @@
+<div class="glass rounded-sm border border-white/10 p-8 shadow-2xl">
+  
+  <div class="mb-8 border-b border-white/10 pb-4">
+    <h2 class="text-2xl font-serif text-dourado tracking-wide">Publicar Novo Artigo</h2>
+    <p class="text-[10px] text-white/50 uppercase tracking-widest mt-1">Editor de Texto</p>
+  </div>
+
+  <form [formGroup]="formArtigo" (ngSubmit)="onPublicar()" class="space-y-6">
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="md:col-span-2 space-y-2">
+        <label class="text-[10px] uppercase tracking-widest text-white/60 font-light">Título do Artigo</label>
+        <input type="text" formControlName="titulo" class="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-champagne/60 transition-colors" placeholder="Ex: Nova jurisprudência...">
+      </div>
+      
+      <div class="space-y-2">
+        <label class="text-[10px] uppercase tracking-widest text-white/60 font-light">Categoria</label>
+        <select formControlName="categoria" class="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-sm text-white/70 focus:outline-none focus:border-champagne/60 transition-colors appearance-none">
+          <option value="Direito Civil">Direito Civil</option>
+          <option value="Direito Trabalhista">Direito Trabalhista</option>
+          <option value="Direito de Família">Direito de Família</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-[10px] uppercase tracking-widest text-white/60 font-light">Imagem de Capa</label>
+      <div class="w-full border border-dashed border-white/20 rounded-sm p-6 text-center hover:border-champagne/60 transition-colors cursor-pointer bg-black/30">
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" class="hidden" id="upload-capa">
+        <label for="upload-capa" class="cursor-pointer flex flex-col items-center gap-2">
+          <span class="text-champagne">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </span>
+          <span class="text-xs text-white/60" *ngIf="!imagemSelecionada">Clique para enviar imagem (Cloudinary)</span>
+          <span class="text-xs text-dourado font-medium" *ngIf="imagemSelecionada">{{ imagemSelecionada.name }}</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-[10px] uppercase tracking-widest text-white/60 font-light">Resumo Breve</label>
+      <textarea formControlName="resumo" rows="2" class="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-champagne/60 transition-colors resize-none"></textarea>
+    </div>
+
+    <div class="space-y-2">
+      <label class="text-[10px] uppercase tracking-widest text-white/60 font-light">Corpo do Artigo</label>
+      <textarea formControlName="conteudoHtml" rows="10" class="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-sm text-white focus:outline-none focus:border-champagne/60 transition-colors resize-none" placeholder="Escreva o artigo completo..."></textarea>
+    </div>
+
+    <div class="flex items-center justify-between pt-4">
+      <div class="text-[10px] text-emerald-400 tracking-widest uppercase" *ngIf="salvoSucesso">Publicado com sucesso!</div>
+      <div class="text-[10px] text-champagne tracking-widest uppercase" *ngIf="salvando">Salvando no Banco...</div>
+      
+      <button type="submit" [disabled]="formArtigo.invalid || salvando" class="ml-auto px-10 py-4 bg-gradient-to-r from-dourado to-champagne text-black text-[10px] font-bold uppercase tracking-[0.2em] rounded-sm hover:-translate-y-1 shadow-[0_0_20px_rgba(185,153,97,0.2)] transition-all duration-300 disabled:opacity-50 disabled:translate-y-0">
+        Publicar Artigo
+      </button>
+    </div>
+
+  </form>
+</div>

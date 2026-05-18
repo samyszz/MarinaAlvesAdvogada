@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-grafite: #3f424b;
+  --color-dourado: #b89d3a;
+  --color-champagne: #b99961;
+}
+
+/* Base fluida para a página */
+html {
+  scroll-behavior: smooth;
+  background-color: #3f424b; /* Evita flash branco no carregamento */
+}
+
+/* =========================================
+   Classes de Animação Premium (Scroll Reveal)
+   ========================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  /* Curva cubic-bezier para um movimento "lento no final", típico de sites de luxo */
+  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Atrasos em cascata para elementos próximos */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+
+/* Classes do Scroll Reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  filter: blur(4px);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Atrasos para elementos em lista (ex: cards de artigos) */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
