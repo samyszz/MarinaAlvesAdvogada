@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "habitat-crm",
+    "firebase deploy --only firestore:rules": "habitat-crm"
+  },
+  "targets": {},
+  "etags": {}
+}
