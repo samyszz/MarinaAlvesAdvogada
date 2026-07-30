@@ -1,0 +1,23 @@
+[
+  {
+    "origin": [
+      "http://localhost:4200",
+      "http://localhost:49633",
+      "http://127.0.0.1:4200",
+      "http://127.0.0.1:49633",
+      "https://*.netlify.app",
+      "https://YOUR-DOMAIN.com.br",
+      "https://www.YOUR-DOMAIN.com.br"
+    ],
+    "method": ["GET", "PUT", "POST", "DELETE", "HEAD"],
+    "responseHeader": [
+      "Content-Type",
+      "Content-Disposition",
+      "Cache-Control",
+      "x-goog-*",
+      "Authorization"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]
+

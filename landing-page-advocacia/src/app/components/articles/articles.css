@@ -1,0 +1,57 @@
+/* Smooth transition for carousel slides */
+.carousel-slide {
+  transition: transform 0.5s ease-out;
+}
+
+/* Grayscale filter utility */
+.grayscale-20 {
+  filter: grayscale(20%);
+}
+
+.group:hover .grayscale-20 {
+  filter: grayscale(0%);
+}
+
+/* Line clamp utility */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Arrow buttons hover effect */
+.carousel-arrow {
+  transition: all 0.3s ease;
+}
+
+.carousel-arrow:hover {
+  transform: scale(1.1);
+}
+
+/* Dots navigation */
+.carousel-dot {
+  transition: all 0.3s ease;
+}
+
+/* Modal scrollbar styling */
+.max-h-\[45vh\]::-webkit-scrollbar {
+  width: 4px;
+}
+
+.max-h-\[45vh\]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.max-h-\[45vh\]::-webkit-scrollbar-thumb {
+  background: #d4c5a9;
+  border-radius: 2px;
+}
+

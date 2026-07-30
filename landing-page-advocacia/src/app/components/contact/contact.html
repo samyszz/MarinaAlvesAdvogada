@@ -48,8 +48,8 @@
           <span *ngIf="formContato.get('mensagem')?.touched && formContato.get('mensagem')?.invalid" class="text-[10px] text-amber-500 tracking-wide">Descreva seu caso (mínimo 10 caracteres)</span>
         </div>
 
-        <button type="submit" class="w-full py-4 bg-gradient-to-r from-dourado to-champagne text-black text-xs font-semibold uppercase tracking-widest rounded-sm hover:brightness-110 transition-all duration-300">
-          Enviar Solicitação
+        <button type="submit" [disabled]="enviando" class="w-full py-4 bg-gradient-to-r from-dourado to-champagne text-black text-xs font-semibold uppercase tracking-widest rounded-sm hover:brightness-110 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed">
+          {{ enviando ? 'Enviando...' : 'Enviar Solicitação' }}
         </button>
 
       </form>

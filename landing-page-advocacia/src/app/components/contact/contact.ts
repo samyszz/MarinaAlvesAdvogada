@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '../../firebase';
 
 @Component({
   selector: 'app-contact',
@@ -14,7 +16,9 @@ export class ContactComponent {
   enviadoSucesso = false;
   enviando = false; // Novo estado para controlar o botão
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+  ) {
     this.formContato = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       telefone: ['', [Validators.required]],
@@ -29,29 +33,21 @@ export class ContactComponent {
       const dados = this.formContato.value;
 
       try {
-        // Dispara os dados para o FormSubmit usando Fetch API
-        const response = await fetch('https://formsubmit.co/ajax/marinalves1983@gmail.com', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            _subject: `Novo Contato do Site - ${dados.nome}`, // Assunto do email
-            Nome: dados.nome,
-            Telefone: dados.telefone,
-            Email: dados.email,
-            Mensagem: dados.mensagem
-          })
+        await addDoc(collection(firestore, 'leads'), {
+          nome: dados.nome,
+          telefone: dados.telefone,
+          email: dados.email,
+          mensagem: dados.mensagem,
+          interesse: 'Contato da landing page',
+          origem: 'landing-page-advocacia',
+          criadoEm: serverTimestamp(),
         });
 
-        if (response.ok) {
-          this.enviadoSucesso = true;
-          this.formContato.reset();
-          
-          // Oculta a mensagem de sucesso após 5 segundos
-          setTimeout(() => this.enviadoSucesso = false, 5000);
-        }
+        this.enviadoSucesso = true;
+        this.formContato.reset();
+
+        // Oculta a mensagem de sucesso após 5 segundos
+        setTimeout(() => this.enviadoSucesso = false, 5000);
       } catch (error) {
         console.error('Erro ao enviar a mensagem:', error);
         alert('Ocorreu um erro ao enviar a mensagem. Tente novamente mais tarde.');

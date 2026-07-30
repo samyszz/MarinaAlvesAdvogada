@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
+const FIXED_ADMIN_EMAIL = 'admin@marinaalves.adv.br';
+const FIXED_ADMIN_PASSWORD = 'Marina@2026';
 
 @Component({
   selector: 'app-login',
@@ -9,30 +13,41 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
-export class LoginComponent {
+export class Login {
   formLogin: FormGroup;
   erroLogin = false;
   carregando = false;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router,
+  ) {
     this.formLogin = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  onLogin() {
+  async onLogin() {
     if (this.formLogin.valid) {
       this.carregando = true;
-      const { email, senha } = this.formLogin.value;
-      
-      console.log('Autenticando no Firebase...', email);
-      
-      // Simula o tempo de resposta do banco
-      setTimeout(() => {
+      this.erroLogin = false;
+      const email = String(this.formLogin.value.email ?? '').trim().toLowerCase();
+      const senha = String(this.formLogin.value.senha ?? '');
+
+      try {
+        if (email === FIXED_ADMIN_EMAIL && senha === FIXED_ADMIN_PASSWORD) {
+          this.router.navigate(['/dashboard']);
+          return;
+        }
+
+        this.erroLogin = true;
+      } catch (error) {
+        console.error('Erro ao autenticar:', error);
+        this.erroLogin = true; // Mostra o alerta vermelho na tela
+      } finally {
         this.carregando = false;
-        // Lógica de redirecionamento para o Dashboard entrará aqui
-      }, 1500);
+      }
     } else {
       this.formLogin.markAllAsTouched();
     }

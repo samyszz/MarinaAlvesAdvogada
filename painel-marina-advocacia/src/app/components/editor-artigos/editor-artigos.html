@@ -1,11 +1,15 @@
 <div class="glass rounded-sm border border-white/10 p-8 shadow-2xl">
   
   <div class="mb-8 border-b border-white/10 pb-4">
-    <h2 class="text-2xl font-serif text-dourado tracking-wide">Publicar Novo Artigo</h2>
-    <p class="text-[10px] text-white/50 uppercase tracking-widest mt-1">Editor de Texto</p>
+    <h2 class="text-2xl font-serif text-dourado tracking-wide">{{ editando ? 'Editar Artigo' : 'Publicar Novo Artigo' }}</h2>
+    <p class="text-[10px] text-white/50 uppercase tracking-widest mt-1">{{ editando ? 'Editando publicação existente' : 'Editor de Texto' }}</p>
   </div>
 
   <form [formGroup]="formArtigo" (ngSubmit)="onPublicar()" class="space-y-6">
+    
+    <div *ngIf="editando" class="bg-champagne/10 border border-champagne/20 rounded-sm px-4 py-3 text-xs text-champagne tracking-wide">
+      ✏️ Você está editando: <strong>{{ artigoParaEditar?.titulo }}</strong>
+    </div>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="md:col-span-2 space-y-2">
@@ -48,12 +52,19 @@
     </div>
 
     <div class="flex items-center justify-between pt-4">
-      <div class="text-[10px] text-emerald-400 tracking-widest uppercase" *ngIf="salvoSucesso">Publicado com sucesso!</div>
-      <div class="text-[10px] text-champagne tracking-widest uppercase" *ngIf="salvando">Salvando no Banco...</div>
+      <div class="flex items-center gap-3">
+        <div class="text-[10px] text-emerald-400 tracking-widest uppercase" *ngIf="salvoSucesso">{{ editando ? 'Salvo com sucesso!' : 'Publicado com sucesso!' }}</div>
+        <div class="text-[10px] text-champagne tracking-widest uppercase" *ngIf="salvando">Salvando...</div>
+      </div>
       
-      <button type="submit" [disabled]="formArtigo.invalid || salvando" class="ml-auto px-10 py-4 bg-gradient-to-r from-dourado to-champagne text-black text-[10px] font-bold uppercase tracking-[0.2em] rounded-sm hover:-translate-y-1 shadow-[0_0_20px_rgba(185,153,97,0.2)] transition-all duration-300 disabled:opacity-50 disabled:translate-y-0">
-        Publicar Artigo
-      </button>
+      <div class="flex items-center gap-3">
+        <button type="button" *ngIf="editando" (click)="cancelarEdicao()" class="px-6 py-4 border border-white/20 text-white/60 text-[10px] font-bold uppercase tracking-[0.2em] rounded-sm hover:border-white/40 hover:text-white transition-all duration-300">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="formArtigo.invalid || salvando" class="px-10 py-4 bg-gradient-to-r from-dourado to-champagne text-black text-[10px] font-bold uppercase tracking-[0.2em] rounded-sm hover:-translate-y-1 shadow-[0_0_20px_rgba(185,153,97,0.2)] transition-all duration-300 disabled:opacity-50 disabled:translate-y-0">
+          {{ editando ? 'Salvar Alterações' : 'Publicar Artigo' }}
+        </button>
+      </div>
     </div>
 
   </form>

@@ -15,91 +15,141 @@
       </p>
     </div>
 
-    <!-- Grid de Artigos -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Conteúdo dos Artigos -->
+    <ng-container *ngIf="(artigos$ | async) as artigos; else semArtigos">
       
-      <!-- Card Artigo 1 -->
-      <article class="group cursor-pointer flex flex-col justify-between space-y-6">
-        <div class="space-y-4">
-          <!-- Container da Imagem com efeito Zoom Premium -->
-          <div class="w-full aspect-16/10 bg-neutral-100 rounded-sm overflow-hidden border border-neutral-200 shadow-sm relative">
-            <img 
-              src="https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=500&auto=format&fit=crop" 
-              alt="Cenário de planejamento sucessório" 
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out grayscale-20"
-            />
+      <!-- MODO GRID (menos de 3 artigos) -->
+      <div *ngIf="!modoCarrossel" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <article *ngFor="let artigo of artigos; let i = index" class="group cursor-pointer flex flex-col justify-between space-y-6" (click)="abrirArtigo(artigo)">
+          <div class="space-y-4">
+            <div class="w-full aspect-16/10 bg-neutral-100 rounded-sm overflow-hidden border border-neutral-200 shadow-sm relative">
+              <ng-container *ngIf="capaArtigo(artigo); else semImagem">
+                <img
+                  [src]="capaArtigo(artigo)"
+                  [alt]="artigo.titulo || 'Artigo jurídico'"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+              </ng-container>
+              <ng-template #semImagem>
+                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-champagne/10 to-dourado/5">
+                  <div class="text-center px-4">
+                    <svg class="w-8 h-8 mx-auto text-champagne/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <p class="text-[10px] text-champagne/30 uppercase tracking-wider mt-2">Sem imagem</p>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+            <div class="flex items-center gap-4 text-[11px] uppercase tracking-wider text-neutral-400 font-light">
+              <span class="text-dourado font-medium">{{ artigo.categoria || 'Direito' }}</span>
+              <span>•</span>
+              <span>{{ artigo.publicadoEmTexto || 'Publicado recentemente' }}</span>
+            </div>
+            <h3 class="text-xl font-light leading-snug text-neutral-900 group-hover:text-dourado transition-colors duration-300">
+              {{ artigo.titulo }}
+            </h3>
+            <p class="text-xs font-light text-neutral-500 leading-relaxed line-clamp-3">
+              {{ artigo.resumo }}
+            </p>
           </div>
-          <div class="flex items-center gap-4 text-[11px] uppercase tracking-wider text-neutral-400 font-light">
-            <span class="text-dourado font-medium">Direito de Família</span>
-            <span>•</span>
-            <span>12 Mai, 2026</span>
-          </div>
-          <h3 class="text-xl font-light leading-snug text-neutral-900 group-hover:text-dourado transition-colors duration-300">
-            Planejamento Sucessório: Como proteger o patrimônio familiar com holding?
-          </h3>
-          <p class="text-xs font-light text-neutral-500 leading-relaxed line-clamp-3">
-            Entenda os principais mecanismos jurídicos e tributários para realizar a transição de bens de forma segura, reduzindo custos e evitando litígios demorados.
-          </p>
-        </div>
-        <div class="pt-2 text-xs font-medium text-neutral-900 group-hover:text-champagne transition-colors duration-300 flex items-center gap-2">
-          Ler mais <span class="group-hover:translate-x-1 transition-transform duration-300">→</span>
-        </div>
-      </article>
+          <button type="button" class="pt-2 text-xs font-medium text-neutral-900 group-hover:text-champagne transition-colors duration-300 flex items-center gap-2 text-left" (click)="abrirArtigo(artigo)">
+            Ler mais <span class="group-hover:translate-x-1 transition-transform duration-300">→</span>
+          </button>
+        </article>
+      </div>
 
-      <!-- Card Artigo 2 -->
-      <article class="group cursor-pointer flex flex-col justify-between space-y-6">
-        <div class="space-y-4">
-          <div class="w-full aspect-16/10 bg-neutral-100 rounded-sm overflow-hidden border border-neutral-200 shadow-sm relative">
-            <img 
-              src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=500&auto=format&fit=crop" 
-              alt="Balança da justiça" 
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out grayscale-20"
-            />
+      <!-- MODO CARROSSEL (3+ artigos) -->
+      <div *ngIf="modoCarrossel" class="relative" (mouseenter)="pausarAutoPlay()" (mouseleave)="retomarAutoPlay()">
+        <!-- Slides -->
+        <div class="overflow-hidden rounded-sm">
+          <div class="flex transition-transform duration-500 ease-out" [style.transform]="'translateX(-' + (slideAtual % artigos.length) * 100 + '%)'">
+            <article *ngFor="let artigo of artigos; let i = index" class="min-w-full flex flex-col md:flex-row gap-8 md:gap-12 items-center cursor-pointer" (click)="abrirArtigo(artigo)">
+              <div class="w-full md:w-1/2 aspect-16/10 bg-neutral-100 rounded-sm overflow-hidden border border-neutral-200 shadow-sm relative shrink-0">
+                <ng-container *ngIf="capaArtigo(artigo); else semImagemSlide">
+                  <img
+                    [src]="capaArtigo(artigo)"
+                    [alt]="artigo.titulo || 'Artigo jurídico'"
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                </ng-container>
+                <ng-template #semImagemSlide>
+                  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-champagne/10 to-dourado/5">
+                    <svg class="w-10 h-10 text-champagne/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  </div>
+                </ng-template>
+              </div>
+              <div class="w-full md:w-1/2 space-y-5">
+                <div class="flex items-center gap-4 text-[11px] uppercase tracking-wider text-neutral-400 font-light">
+                  <span class="text-dourado font-medium">{{ artigo.categoria || 'Direito' }}</span>
+                  <span>•</span>
+                  <span>{{ artigo.publicadoEmTexto || 'Publicado recentemente' }}</span>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-light leading-snug text-neutral-900">
+                  {{ artigo.titulo }}
+                </h3>
+                <p class="text-sm font-light text-neutral-500 leading-relaxed line-clamp-4">
+                  {{ artigo.resumo }}
+                </p>
+                <button type="button" class="inline-flex items-center gap-2 text-xs font-medium text-neutral-900 hover:text-champagne transition-colors duration-300">
+                  Ler artigo completo <span class="group-hover:translate-x-1 transition-transform duration-300">→</span>
+                </button>
+              </div>
+            </article>
           </div>
-          <div class="flex items-center gap-4 text-[11px] uppercase tracking-wider text-neutral-400 font-light">
-            <span class="text-dourado font-medium">Direito Civil</span>
-            <span>•</span>
-            <span>04 Mai, 2026</span>
-          </div>
-          <h3 class="text-xl font-light leading-snug text-neutral-900 group-hover:text-dourado transition-colors duration-300">
-            Contratos Digitais e sua validade jurídica no cenário atual
-          </h3>
-          <p class="text-xs font-light text-neutral-500 leading-relaxed line-clamp-3">
-            Quais são as reais exigências para que uma assinatura eletrônica possua força executiva perante os tribunais em 2026? Descubra os cuidados necessários.
-          </p>
         </div>
-        <div class="pt-2 text-xs font-medium text-neutral-900 group-hover:text-champagne transition-colors duration-300 flex items-center gap-2">
-          Ler mais <span class="group-hover:translate-x-1 transition-transform duration-300">→</span>
-        </div>
-      </article>
 
-      <!-- Card Artigo 3 -->
-      <article class="group cursor-pointer flex flex-col justify-between space-y-6">
-        <div class="space-y-4">
-          <div class="w-full aspect-16/10 bg-neutral-100 rounded-sm overflow-hidden border border-neutral-200 shadow-sm relative">
-            <img 
-              src="https://images.unsplash.com/photo-1521791136368-1a46827d591c?q=80&w=500&auto=format&fit=crop" 
-              alt="Reunião corporativa corporativa" 
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out grayscale-20"
-            />
-          </div>
-          <div class="flex items-center gap-4 text-[11px] uppercase tracking-wider text-neutral-400 font-light">
-            <span class="text-dourado font-medium">Direito Trabalhista</span>
-            <span>•</span>
-            <span>28 Abr, 2026</span>
-          </div>
-          <h3 class="text-xl font-light leading-snug text-neutral-900 group-hover:text-dourado transition-colors duration-300">
-            Compliance Trabalhista: Prevenção de riscos para médias empresas
-          </h3>
-          <p class="text-xs font-light text-neutral-500 leading-relaxed line-clamp-3">
-            Como a implementação de normas rígidas de auditoria interna e adequação contratual pode salvar corporações de passivos trabalhistas severos.
-          </p>
-        </div>
-        <div class="pt-2 text-xs font-medium text-neutral-900 group-hover:text-champagne transition-colors duration-300 flex items-center gap-2">
-          Ler mais <span class="group-hover:translate-x-1 transition-transform duration-300">→</span>
-        </div>
-      </article>
+        <!-- Navegação: Setas -->
+        <button type="button" (click)="anterior(); $event.stopPropagation()" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-6 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 shadow-md border border-neutral-200 flex items-center justify-center hover:bg-white transition-all z-10 text-neutral-600 hover:text-dourado">
+          <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button type="button" (click)="proximo(); $event.stopPropagation()" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-6 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/90 shadow-md border border-neutral-200 flex items-center justify-center hover:bg-white transition-all z-10 text-neutral-600 hover:text-dourado">
+          <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
 
+        <!-- Navegação: Dots -->
+        <div class="flex items-center justify-center gap-2 mt-8">
+          <button *ngFor="let dot of artigos; let i = index" type="button" (click)="irPara(i); $event.stopPropagation()" class="w-2 h-2 rounded-full transition-all duration-300" [class.bg-dourado]="i === (slideAtual % artigos.length)" [class.w-6]="i === (slideAtual % artigos.length)" [class.bg-neutral-300]="i !== (slideAtual % artigos.length)" [class.hover:bg-neutral-400]="i !== (slideAtual % artigos.length)">
+          </button>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <ng-template #semArtigos>
+      <div class="rounded-sm border border-neutral-200 bg-white/70 p-8 text-sm text-neutral-600">
+        Nenhuma publicação foi cadastrada ainda.
+      </div>
+    </ng-template>
+
+    
+
+    <div *ngIf="artigoSelecionado" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center px-4 py-10" (click)="fecharArtigo()">
+      <div class="w-full max-w-4xl bg-white text-neutral-800 rounded-sm overflow-hidden shadow-2xl" (click)="$event.stopPropagation()">
+        <div class="grid md:grid-cols-[1.1fr_0.9fr]">
+          <div class="bg-neutral-100">
+            <ng-container *ngIf="capaArtigo(artigoSelecionado); else semImagemModal">
+              <img [src]="capaArtigo(artigoSelecionado)" [alt]="artigoSelecionado.titulo || 'Artigo'" class="w-full h-full object-cover max-h-[420px] md:max-h-none" />
+            </ng-container>
+            <ng-template #semImagemModal>
+              <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-champagne/10 to-dourado/5 min-h-[300px] md:min-h-full">
+                <svg class="w-12 h-12 text-champagne/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
+            </ng-template>
+          </div>
+          <div class="p-6 md:p-8 space-y-5">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-[10px] uppercase tracking-[0.3em] text-dourado font-semibold">{{ artigoSelecionado.categoria || 'Direito' }}</p>
+                <h3 class="mt-2 text-2xl md:text-3xl font-light tracking-wide text-neutral-900">{{ artigoSelecionado.titulo }}</h3>
+              </div>
+              <button type="button" class="text-xs uppercase tracking-[0.25em] text-neutral-500 hover:text-neutral-900" (click)="fecharArtigo()">Fechar</button>
+            </div>
+            <p class="text-xs uppercase tracking-[0.25em] text-neutral-400">{{ artigoSelecionado.publicadoEmTexto || 'Publicado recentemente' }}</p>
+            <div class="text-sm leading-7 text-neutral-700 whitespace-pre-line max-h-[45vh] overflow-y-auto pr-2">
+              {{ artigoSelecionado.conteudoHtml || artigoSelecionado.resumo }}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
